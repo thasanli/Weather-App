@@ -1,60 +1,79 @@
-// declare variables ans select elementes
-
+//declare variables and select elements
 var ROOT_URL = "http://api.openweathermap.org/data/2.5/weather?zip="
-var API_KEY = "38d5c95e93fcb766844277029f737668"
+var API_KEY = "9347522dfc18eb6dc577618e6c9e8db1"
+//select the elements cityTitle, zip input bar, weather div, img with clas icon, span with class temp, span with class humid, select the span with the class deg
 
-// select the elements cityTitle, zip input bar, weather div, img with class icon, span with class temp, span with class humid , select the span with class deg
-
-var cityTitle = document.querySelector(".cityTitle")
-var zip = document.querySelector(".zip")
-var weather = document.querySelector(".weather")
-var icon = document.querySelector(".icon")
-var temp = document.querySelector(".temp")
-var humid = document.querySelector(".humid")
-var deg = document.querySelector(".deg")
+var cityTitle = document.querySelector('.cityTitle')
+var zipInput = document.querySelector('.zip')
+var weather = document.querySelector('.weather')
+var imgIcon = document.querySelector('.icon')
+var spanTemp = document.querySelector('.temp')
+var spanHumid = document.querySelector('.humid')
+var spanDeg = document.querySelector('.deg')
+var btn = document.querySelector('.convert')
+var f
 var icons = {
-    "Clouds" : "img/cloudy.png",
-    "Thunderstorm" : "img/thunderstorm.png"
-}
+        "Clouds": "img/cloudy.png",
+        "Thunderstorm": "img/thunderstorm.png",
+        "Rain": "img/rain.png",
+        "Snow": "img/snow.png",
+        "Sunny": "img/sun.png",
+        "Partly Cloudy": "img/partly-cloudy.png",
+        "Hail": "img/hail.png",
+        "Clear": "img/clear.png",
 
-// dedine functions 
-function iconSelector(weather){
-    return icons[weather]
+    }
+//define functions
+function iconSelector(weather) {
+        return icons[weather]
+    //icons['Clouds']
 }
-function kelvinToFaren(kelvin) {
+function FtoC(f) {
+    return Math.round((f - 32) * (5 / 9))
+}
+function kelvintoFaren(kelvin) {
     return Math.round((kelvin * 9 / 5) - 459.67)
 }
+
 
 
 function getWeather(zipCode) {
     // console.log(zipCode)
     $.ajax({
-        type: "GET",
+        type: 'GET',
         url: `${ROOT_URL}${zipCode},us&appid=${API_KEY}`,
         dataType: 'json',
         success: function (data) {
             console.log(data)
             cityTitle.textContent = data.name
             weather.textContent = data.weather[0].main
-            temp.textContent = kelvinToFaren(data.main.temp)
-            humid.textContent = data.main.humidity
-            icon.src = iconSelector(data.weather[0].main)
+            f = kelvintoFaren(data.main.temp)
+            spanTemp.textContent = f
+            spanHumid.textContent = data.main.humidity
+            imgIcon.src = iconSelector(data.weather[0].main)
         },
-
         error: function (error) {
             console.log("There was an error")
-
         }
     })
 }
 
-// call functions and/or event listener
+getWeather(33166)
 
-zip.addEventListener("keypress", function (e) {
+//call functions and/or add Event Listeners
+zipInput.addEventListener("keypress", function (e) {
     if (e.key == "Enter") {
-        getWeather(zip.value)
+        getWeather(zipInput.value)
     }
-}
-
-)
-getWeather(33139)
+})
+btn.addEventListener("click", function () {
+    if (btn.textContent == "Convert to C") {
+        spanTemp.textContent = FtoC(spanTemp.textContent)
+        spanDeg.innerHTML = "&deg; C"
+        btn.textContent = "Convert to F"
+    } else {
+        spanTemp.textContent = f
+        spanDeg.innerHTML = "&deg; F"
+        btn.textContent = "Convert to C"
+    }
+})
